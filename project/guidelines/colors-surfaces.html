@@ -1,0 +1,24 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Surfaces — near-black canvas" subtitle="Shell, page, card and input fills step up from pure black" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; background:var(--gs-bg); font-family:var(--gs-font-sans); padding:20px; }
+  .row { display:flex; gap:12px; }
+  .sw { flex:1; border-radius:var(--gs-radius-xl); height:96px; display:flex; flex-direction:column; justify-content:flex-end; padding:10px; box-sizing:border-box; border:1px solid var(--gs-white-08); color:#fff; }
+  .name { font-size:12px; font-weight:600; }
+  .hex { font-size:11px; color:var(--gs-muted); font-family:var(--gs-font-mono); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw" style="background:#000;"><span class="name">Shell</span><span class="hex">#000000</span></div>
+    <div class="sw" style="background:var(--gs-bg);"><span class="name">Page</span><span class="hex">#0a0a0a</span></div>
+    <div class="sw" style="background:var(--gs-bg-landing);"><span class="name">Landing</span><span class="hex">#0d1117</span></div>
+    <div class="sw" style="background:var(--gs-surface);"><span class="name">Card</span><span class="hex">#111111</span></div>
+    <div class="sw" style="background:var(--gs-surface-2);"><span class="name">Input / muted</span><span class="hex">#1a1a1a</span></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Gold — primary accent" subtitle="The single brand accent; black foreground on fills" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; background:var(--gs-bg); font-family:var(--gs-font-sans); padding:20px; }
+  .row { display:flex; gap:12px; }
+  .sw { flex:1; border-radius:var(--gs-radius-xl); height:96px; display:flex; flex-direction:column; justify-content:flex-end; padding:10px; box-sizing:border-box; }
+  .name { font-size:12px; font-weight:600; }
+  .hex { font-size:11px; opacity:.7; font-family:var(--gs-font-mono); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw" style="background:var(--gs-gold); color:#000;"><span class="name">Gold</span><span class="hex">#FFD700</span></div>
+    <div class="sw" style="background:var(--gs-gold-hover); color:#000;"><span class="name">Gold hover</span><span class="hex">#FFC200</span></div>
+    <div class="sw" style="background:var(--gs-gold-deep); color:#000;"><span class="name">Gold deep / amber</span><span class="hex">#FFA500</span></div>
+    <div class="sw" style="background:var(--gs-gradient-gold); color:#000;"><span class="name">Gradient</span><span class="hex">135° gold→amber</span></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+/* ============================================================
+   GlowScore — COLORS
+   Dark-only design system. Near-black canvas, gold accent,
+   white text on an opacity ladder.
+   ============================================================ */
+:root {
+  /* ---- Base canvas / surfaces ---- */
+  --gs-black: #000000;          /* app shell background */
+  --gs-bg: #0a0a0a;             /* default page background */
+  --gs-bg-landing: #0d1117;     /* marketing landing background (cooler) */
+  --gs-surface: #111111;        /* cards, popovers, sidebar */
+  --gs-surface-2: #1a1a1a;      /* inputs, secondary/muted fills */
+  --gs-surface-blue: #1a2030;   /* photo / media placeholder tiles */
+
+  /* ---- Gold (primary brand) ---- */
+  --gs-gold: #FFD700;           /* primary accent */
+  --gs-gold-hover: #FFC200;     /* primary hover (app buttons) */
+  --gs-gold-deep: #FFA500;      /* gradient end / amber */
+  --gs-gold-fg: #000000;        /* text/icon on gold fills */
+
+  /* ---- Text ---- */
+  --gs-fg: #ffffff;             /* primary text */
+  --gs-muted: #888888;          /* muted / secondary text */
+  --gs-muted-2: #555555;        /* faint text, placeholders */
+
+  /* White opacity ladder — the workhorse of GlowScore text & borders.
+     Used as text-white/40, border-white/8, bg-white/[0.02] in the app. */
+  --gs-white-90: rgba(255,255,255,0.90);
+  --gs-white-70: rgba(255,255,255,0.70);
+  --gs-white-60: rgba(255,255,255,0.60);
+  --gs-white-50: rgba(255,255,255,0.50);
+  --gs-white-40: rgba(255,255,255,0.40);
+  --gs-white-30: rgba(255,255,255,0.30);
+  --gs-white-20: rgba(255,255,255,0.20);
+  --gs-white-10: rgba(255,255,255,0.10);
+  --gs-white-08: rgba(255,255,255,0.08);
+  --gs-white-05: rgba(255,255,255,0.05);
+  --gs-white-02: rgba(255,255,255,0.02);
+
+  /* ---- Borders ---- */
+  --gs-border: #222222;         /* default hairline border */
+  --gs-border-strong: #333333;  /* input / control border */
+  --gs-border-soft: var(--gs-white-08);
+
+  /* ---- Semantic score colors (used on radar / sub-scores) ---- */
+  --gs-score-low: #ff6b6b;      /* below par */
+  --gs-score-mid: #FFD700;      /* on par (gold) */
+  --gs-score-high: #4ade80;     /* strong */
+  --gs-destructive: oklch(0.577 0.245 27.325);
+
+  /* ---- Semantic aliases (prefer these in product UI) ---- */
+  --surface-page: var(--gs-bg);
+  --surface-card: var(--gs-surface);
+  --surface-input: var(--gs-surface-2);
+  --text-body: var(--gs-fg);
+  --text-muted: var(--gs-muted);
+  --text-faint: var(--gs-white-30);
+  --border-card: var(--gs-border);
+  --accent: var(--gs-gold);
+  --accent-fg: var(--gs-gold-fg);
+  --ring: var(--gs-gold);
+}

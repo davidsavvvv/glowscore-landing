@@ -1,0 +1,42 @@
+/* ============================================================
+   GlowScore — TYPOGRAPHY
+   Playfair Display for display/headings (big, confident, editorial).
+   Inter for everything else (UI, body, labels).
+   ============================================================ */
+:root {
+  /* ---- Families ---- */
+  --gs-font-serif: "Playfair Display", Georgia, serif;   /* display & headings */
+  --gs-font-sans: "Inter", system-ui, -apple-system, sans-serif; /* body & UI */
+  --gs-font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Semantic aliases */
+  --font-heading: var(--gs-font-serif);
+  --font-body: var(--gs-font-sans);
+
+  /* ---- Type scale (px) ---- */
+  --gs-text-display: 72px;   /* hero h1 (sm:text-7xl) */
+  --gs-text-h1: 48px;        /* section h2 (text-5xl) */
+  --gs-text-h2: 36px;        /* text-4xl */
+  --gs-text-h3: 24px;        /* card / page title (text-2xl) */
+  --gs-text-lg: 18px;        /* lead paragraph */
+  --gs-text-base: 16px;      /* body */
+  --gs-text-sm: 14px;        /* UI default */
+  --gs-text-xs: 12px;        /* labels, meta */
+
+  /* ---- Weights ---- */
+  --gs-weight-light: 300;
+  --gs-weight-regular: 400;
+  --gs-weight-medium: 500;
+  --gs-weight-semibold: 600;
+  --gs-weight-bold: 700;
+  --gs-weight-extrabold: 800;
+
+  /* ---- Line height ---- */
+  --gs-leading-tight: 1.05;  /* display headlines */
+  --gs-leading-snug: 1.2;
+  --gs-leading-normal: 1.5;
+  --gs-leading-relaxed: 1.7;
+
+  /* ---- Tracking ---- */
+  --gs-tracking-label: 0.12em; /* uppercase eyebrow labels */
+}

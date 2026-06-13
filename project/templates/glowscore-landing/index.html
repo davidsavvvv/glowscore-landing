@@ -1,0 +1,345 @@
+<!-- @template name="GlowScore Landing" description="Page de vente full-luxe — hero éditorial, comparateur avant/après interactif, analyse, science, prix premium, CTA" -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlowScore — Note ton visage. Puis transforme-le.</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="./icon.js"></script>
+<script src="./ds-base.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: #070708; color: #fff; font-family: var(--gs-font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  .serif { font-family: var(--gs-font-serif); }
+  .gold { color: var(--gs-gold); }
+  .champ { color: #E7C87C; }
+  a { color: inherit; text-decoration: none; }
+  section { position: relative; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+  .eyebrow { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .28em; color: var(--gs-white-40); display: inline-flex; align-items: center; gap: 12px; }
+  .eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--gs-gold); opacity: .7; }
+  .rule { height: 1px; background: var(--gs-white-08); }
+  /* film grain + vignette for the luxe finish */
+  .grain::after { content: ""; position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: .045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+    background: radial-gradient(120% 80% at 50% 0%, transparent 55%, rgba(0,0,0,.55) 100%); }
+  @keyframes gs-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .rise { animation: gs-rise .9s var(--gs-ease) both; }
+  ::selection { background: rgba(255,215,0,.25); }
+</style>
+</head>
+<body class="grain">
+<div class="vignette"></div>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+let GlassNav, Button, Card, ScoreRing, ScoreChip, SubScore, GlowBlob, Badge, Icon;
+
+function Wordmark({ size = 18 }) {
+  return <span className="serif" style={{ fontWeight: 700, fontSize: size, letterSpacing: ".01em" }}><span className="gold">Glow</span>Score</span>;
+}
+function Eyebrow({ children }) { return <div className="eyebrow">{children}</div>; }
+
+/* ───────── NAV ───────── */
+function Nav() {
+  return (
+    <div style={{ position: "sticky", top: 18, zIndex: 50, display: "flex", justifyContent: "center", padding: "0 20px" }}>
+      <GlassNav style={{ maxWidth: 960, padding: "14px 22px" }}>
+        <Wordmark />
+        <div style={{ display: "flex", gap: 30, fontSize: 13, letterSpacing: ".04em", color: "var(--gs-white-50)" }}>
+          <a href="#preuve">La preuve</a><a href="#analyse">L'analyse</a><a href="#science">La science</a><a href="#prix">Accès</a>
+        </div>
+        <Button variant="gold" size="sm">Mon score</Button>
+      </GlassNav>
+    </div>
+  );
+}
+
+/* ───────── HERO ───────── */
+function Hero() {
+  return (
+    <section style={{ overflow: "hidden", paddingTop: 72, paddingBottom: 40 }}>
+      <GlowBlob style={{ top: -120, left: "50%", transform: "translateX(-50%)", width: 900, height: 520, opacity: .22, filter: "blur(140px)" }} />
+      <div className="container" style={{ position: "relative", textAlign: "center" }}>
+        <Eyebrow>Analyse faciale par IA</Eyebrow>
+        <h1 className="serif" style={{ fontWeight: 700, fontSize: "clamp(48px, 8vw, 96px)", lineHeight: .98, letterSpacing: "-.02em", margin: "26px auto 0", maxWidth: 900 }}>
+          Note ton visage.<br/><span className="gold" style={{ fontStyle: "italic" }}>Puis transforme-le.</span>
+        </h1>
+        <p style={{ color: "var(--gs-white-60)", fontSize: 19, maxWidth: 540, margin: "28px auto 0", lineHeight: 1.55 }}>
+          30 secondes. Une photo. Zéro filtre. L'IA décortique ton visage, te note sur 10 et t'écrit le plan exact de ton glow-up.
+        </p>
+        <div style={{ display: "flex", gap: 14, justifyContent: "center", marginTop: 36, flexWrap: "wrap" }}>
+          <Button variant="gold" size="lg" iconRight={<Icon name="arrow-right" size={16} color="#000" />}>Découvrir mon score</Button>
+          <Button variant="ghost" size="lg" iconLeft={<Icon name="play" size={15} color="var(--gs-white-50)" />}>Voir une analyse</Button>
+        </div>
+        <div style={{ display: "flex", gap: 22, justifyContent: "center", alignItems: "center", marginTop: 30, color: "var(--gs-white-40)", fontSize: 13 }}>
+          <span style={{ display: "inline-flex", gap: 2 }}>{"★★★★★".split("").map((s, i) => <span key={i} className="gold">★</span>)}</span>
+          <span><b style={{ color: "#fff" }}>4,9</b>/5</span>
+          <span style={{ width: 1, height: 14, background: "var(--gs-white-10)" }} />
+          <span><b style={{ color: "#fff" }}>50 000+</b> glow-ups lancés</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────── AVANT / APRÈS comparator (vraie photo, traitement marqué) ───────── */
+function BeforeAfter() {
+  const [pos, setPos] = useState(50);
+  const ref = useRef(null);
+  const drag = useRef(false);
+  const move = (clientX) => {
+    const r = ref.current.getBoundingClientRect();
+    let p = ((clientX - r.left) / r.width) * 100;
+    setPos(Math.max(3, Math.min(97, p)));
+  };
+  useEffect(() => {
+    const up = () => (drag.current = false);
+    const mv = (e) => { if (drag.current) move(e.touches ? e.touches[0].clientX : e.clientX); };
+    window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up);
+    return () => { window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); };
+  }, []);
+  const imgStyle = { position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" };
+  return (
+    <div style={{ maxWidth: 540, width: "100%", margin: "0 auto" }}>
+      <div ref={ref}
+        onPointerDown={(e) => { drag.current = true; move(e.clientX); }}
+        style={{ position: "relative", width: "100%", aspectRatio: "4/5", borderRadius: "var(--gs-radius-2xl)", overflow: "hidden", border: "1px solid var(--gs-white-10)", cursor: "ew-resize", userSelect: "none", touchAction: "none", boxShadow: "0 40px 120px rgba(0,0,0,.6), var(--gs-glow-card)" }}>
+        {/* APRÈS (base) */}
+        <img src="apres.png" alt="Après" draggable={false} style={{ ...imgStyle, objectPosition: "60% 50%", transform: "scale(1.12)", transformOrigin: "60% 34%" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(120% 80% at 50% 26%, rgba(255,200,90,.12), transparent 60%)", pointerEvents: "none" }} />
+        {/* AVANT (clipped from left) */}
+        <div style={{ position: "absolute", inset: 0, clipPath: `inset(0 ${100 - pos}% 0 0)` }}>
+          <img src="avant.png" alt="Avant" draggable={false} style={{ ...imgStyle, objectPosition: "50% 50%", transform: "scale(1.22)", transformOrigin: "50% 36%" }} />
+        </div>
+        {/* divider */}
+        <div style={{ position: "absolute", top: 0, bottom: 0, left: `${pos}%`, width: 2, transform: "translateX(-1px)", background: "rgba(255,215,0,.8)", boxShadow: "0 0 16px rgba(255,215,0,.6)", pointerEvents: "none" }} />
+        {/* labels + scores */}
+        <div style={{ position: "absolute", top: 18, left: 18 }}>
+          <div style={{ fontSize: 11, letterSpacing: ".24em", color: "rgba(255,255,255,.55)", marginBottom: 8, textShadow: "0 1px 8px rgba(0,0,0,.7)" }}>AVANT</div>
+          <div className="serif" style={{ fontSize: 40, fontWeight: 700, color: "#ff7a7a", lineHeight: 1, textShadow: "0 2px 14px rgba(0,0,0,.7)" }}>6.2<span style={{ fontSize: 16, color: "rgba(255,255,255,.55)" }}>/10</span></div>
+        </div>
+        <div style={{ position: "absolute", top: 18, right: 18, textAlign: "right" }}>
+          <div style={{ fontSize: 11, letterSpacing: ".24em", color: "rgba(255,215,0,.85)", marginBottom: 8 }}>APRÈS</div>
+          <div className="serif gold" style={{ fontSize: 40, fontWeight: 700, lineHeight: 1, textShadow: "0 0 32px rgba(255,215,0,.7)" }}>9.1<span style={{ fontSize: 16, color: "rgba(255,255,255,.55)" }}>/10</span></div>
+        </div>
+        {/* handle */}
+        <div style={{ position: "absolute", top: "50%", left: `${pos}%`, transform: "translate(-50%,-50%)", pointerEvents: "none" }}>
+          <div style={{ width: 46, height: 46, borderRadius: "9999px", background: "var(--gs-gold)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 24px rgba(255,215,0,.6)" }}>
+            <Icon name="chevrons-left-right" size={20} color="#000" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Preuve() {
+  return (
+    <section id="preuve" style={{ padding: "120px 0" }}>
+      <div className="container">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 48, alignItems: "center" }}>
+          <div style={{ textAlign: "center", maxWidth: 720, margin: "0 auto" }}>
+            <Eyebrow>01 — La preuve</Eyebrow>
+            <h2 className="serif" style={{ fontWeight: 700, fontSize: "clamp(36px,5vw,60px)", lineHeight: 1.02, letterSpacing: "-.02em", margin: "22px 0 18px" }}>
+              Le glow-up, <span className="champ" style={{ fontStyle: "italic" }}>ça se voit.</span>
+            </h2>
+            <p style={{ color: "var(--gs-white-50)", fontSize: 17, maxWidth: 520, margin: "0 auto", lineHeight: 1.6 }}>
+              Pas de magie — une méthode. Glisse le curseur : même personne, 90 jours d'écart, +2.9 points.
+            </p>
+          </div>
+          <BeforeAfter />
+          <div style={{ display: "flex", gap: 40, justifyContent: "center", flexWrap: "wrap" }}>
+            {[["+2.9", "points gagnés"], ["90 j", "de protocole"], ["5", "leviers ciblés"]].map(([n, l]) => (
+              <div key={l} style={{ textAlign: "center" }}>
+                <div className="serif gold" style={{ fontSize: 40, fontWeight: 700 }}>{n}</div>
+                <div style={{ color: "var(--gs-white-40)", fontSize: 13, letterSpacing: ".04em" }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────── ANALYSE ───────── */
+function Analyse() {
+  const chips = [["Harmonie","7.6","low"],["Projection","7.9","mid"],["Mâchoire","8.0","high"],["Symétrie","7.7","mid"]];
+  const subs = [["Structure faciale", 8.0],["Peau", 7.4],["Style & soins", 7.6]];
+  const recos = ["Coiffure adaptée à ta morphologie", "Routine soin + éclat de peau", "Posture & angle du regard", "Style vestimentaire structurant"];
+  return (
+    <section id="analyse" style={{ padding: "120px 0", overflow: "hidden", borderTop: "1px solid var(--gs-white-05)" }}>
+      <GlowBlob style={{ top: "40%", left: "70%", transform: "translate(-50%,-50%)", width: 760, height: 560, opacity: .12, filter: "blur(150px)" }} />
+      <div className="container" style={{ position: "relative" }}>
+        <div style={{ textAlign: "center", maxWidth: 680, margin: "0 auto 56px" }}>
+          <Eyebrow>02 — L'analyse</Eyebrow>
+          <h2 className="serif" style={{ fontWeight: 700, fontSize: "clamp(36px,5vw,60px)", lineHeight: 1.02, letterSpacing: "-.02em", margin: "22px 0 18px" }}>
+            Chaque détail, <span className="champ" style={{ fontStyle: "italic" }}>noté.</span>
+          </h2>
+          <p style={{ color: "var(--gs-white-50)", fontSize: 17, lineHeight: 1.6 }}>
+            Des dizaines de critères analysés pour comprendre ton esthétique faciale — et savoir exactement quoi travailler.
+          </p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.1fr 1fr", gap: 20, alignItems: "stretch" }}>
+          <Card glass style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div className="eyebrow" style={{ marginBottom: 18 }}>Score facial</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px 16px" }}>
+              {chips.map(([l,s,t]) => <ScoreChip key={l} label={l} score={s} tone={t} />)}
+            </div>
+          </Card>
+          <Card glow style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 20, padding: 28 }}>
+            <ScoreRing score={8.5} size={150} />
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 14 }}>
+              {subs.map(([l,v]) => <SubScore key={l} label={l} value={v} />)}
+            </div>
+          </Card>
+          <Card glass>
+            <div className="eyebrow" style={{ marginBottom: 18 }}>Ton plan</div>
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 14 }}>
+              {recos.map((r, i) => (
+                <li key={r} style={{ display: "flex", gap: 12, fontSize: 14, color: "var(--gs-white-60)", alignItems: "flex-start" }}>
+                  <span className="serif gold" style={{ fontSize: 14, fontWeight: 700, minWidth: 18 }}>{String(i+1).padStart(2,"0")}</span>
+                  <span>{r}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────── SCIENCE ───────── */
+function Science() {
+  const stats = [
+    ["Salaire", "+15%", "Les personnes attirantes gagnent 10 à 15% de plus.", "Hamermesh & Biddle, 1994"],
+    ["Carrière", "×1,9", "Perçues comme plus compétentes en entretien.", "Puleo, 2006"],
+    ["Confiance", "+23%", "Estime de soi nettement supérieure.", "J. of Social Psychology, 2019"],
+    ["Influence", "+55%", "De chances de convaincre et de vendre.", "Reingen & Kernan, 1993"],
+  ];
+  return (
+    <section id="science" style={{ padding: "120px 0", borderTop: "1px solid var(--gs-white-05)" }}>
+      <div className="container">
+        <div style={{ textAlign: "center", maxWidth: 680, margin: "0 auto 16px" }}>
+          <Eyebrow>03 — La science</Eyebrow>
+          <h2 className="serif" style={{ fontWeight: 700, fontSize: "clamp(36px,5vw,60px)", lineHeight: 1.02, letterSpacing: "-.02em", margin: "22px 0 0" }}>
+            La beauté <span className="champ" style={{ fontStyle: "italic" }}>ouvre des portes.</span>
+          </h2>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 0, marginTop: 48, borderTop: "1px solid var(--gs-white-08)" }}>
+          {stats.map(([cat, big, desc, src], i) => (
+            <div key={cat} style={{ padding: "32px 24px", borderBottom: "1px solid var(--gs-white-08)", borderRight: i < 3 ? "1px solid var(--gs-white-08)" : "none" }}>
+              <div className="eyebrow" style={{ marginBottom: 18 }}>{cat}</div>
+              <div className="serif gold" style={{ fontSize: 44, fontWeight: 700, lineHeight: 1, marginBottom: 14, whiteSpace: "nowrap" }}>{big}</div>
+              <div style={{ color: "var(--gs-white-60)", fontSize: 14, lineHeight: 1.5, marginBottom: 10 }}>{desc}</div>
+              <div style={{ color: "var(--gs-white-20)", fontSize: 11 }}>{src}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────── PRIX ───────── */
+function Prix() {
+  const tiers = [
+    { name: "Découverte", price: "0 €", period: "", features: ["Score global /10", "3 points forts", "Scores par catégorie", "Résumé IA"], cta: "Commencer gratuitement", variant: "outline", hl: false },
+    { name: "Glow-up", price: "4,99 €", period: "l'analyse", features: ["Tout Découverte", "5 recommandations IA", "Axes d'amélioration", "Carte partageable"], cta: "Débloquer mon plan", variant: "gold", hl: true },
+    { name: "Transformation", price: "9,99 €", period: "/ mois", features: ["Analyses illimitées", "Suivi de progression", "Recommandations évolutives", "Support prioritaire"], cta: "Passer Premium", variant: "outline", hl: false },
+  ];
+  return (
+    <section id="prix" style={{ padding: "120px 0", borderTop: "1px solid var(--gs-white-05)" }}>
+      <div className="container">
+        <div style={{ textAlign: "center", maxWidth: 680, margin: "0 auto 56px" }}>
+          <Eyebrow>04 — Accès</Eyebrow>
+          <h2 className="serif" style={{ fontWeight: 700, fontSize: "clamp(36px,5vw,60px)", lineHeight: 1.02, letterSpacing: "-.02em", margin: "22px 0 18px" }}>
+            Choisis ton niveau <span className="champ" style={{ fontStyle: "italic" }}>de glow.</span>
+          </h2>
+          <p style={{ color: "var(--gs-white-50)", fontSize: 17 }}>L'analyse de base est, et restera, gratuite.</p>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 20, alignItems: "start" }}>
+          {tiers.map(t => (
+            <Card key={t.name} accent={t.hl} glow={t.hl} style={{ position: "relative", padding: 28, background: t.hl ? "linear-gradient(180deg, rgba(255,215,0,.07), rgba(255,215,0,.02))" : "var(--gs-white-02)", transform: t.hl ? "translateY(-10px)" : "none" }}>
+              {t.hl && <div style={{ position: "absolute", top: -11, left: "50%", transform: "translateX(-50%)" }}><Badge>★ Le plus choisi</Badge></div>}
+              <div style={{ color: "var(--gs-white-60)", fontSize: 13, letterSpacing: ".06em", textTransform: "uppercase", marginBottom: 14 }}>{t.name}</div>
+              <div style={{ marginBottom: 22 }}>
+                <span className="serif" style={{ fontSize: 42, fontWeight: 700, whiteSpace: "nowrap" }}>{t.price}</span>
+                {t.period && <span style={{ display: "block", color: "var(--gs-white-30)", fontSize: 13, marginTop: 4 }}>{t.period}</span>}
+              </div>
+              <div className="rule" style={{ marginBottom: 20 }} />
+              <ul style={{ listStyle: "none", margin: "0 0 26px", padding: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                {t.features.map(f => (
+                  <li key={f} style={{ display: "flex", gap: 10, fontSize: 14, color: "var(--gs-white-60)", alignItems: "center" }}>
+                    <Icon name="check" size={15} color="var(--gs-gold)" />{f}
+                  </li>
+                ))}
+              </ul>
+              <Button variant={t.variant} block size="md">{t.cta}</Button>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ───────── FINAL CTA ───────── */
+function FinalCTA() {
+  return (
+    <section style={{ padding: "150px 0", overflow: "hidden", borderTop: "1px solid var(--gs-white-05)" }}>
+      <GlowBlob style={{ top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 1000, height: 560, opacity: .22, filter: "blur(150px)" }} />
+      <div className="container" style={{ position: "relative", textAlign: "center", maxWidth: 760 }}>
+        <h2 className="serif" style={{ fontWeight: 700, fontSize: "clamp(44px,6.5vw,84px)", lineHeight: .98, letterSpacing: "-.02em", margin: 0 }}>
+          Ton <span className="gold" style={{ fontStyle: "italic" }}>10/10</span><br/>t'attend.
+        </h2>
+        <p style={{ color: "var(--gs-white-60)", fontSize: 19, margin: "28px auto 36px", maxWidth: 480 }}>
+          Une photo suffit pour savoir où tu en es. Le reste, c'est ton plan qui s'en charge.
+        </p>
+        <Button variant="gold" size="lg" iconRight={<Icon name="arrow-right" size={16} color="#000" />}>Lancer mon analyse — gratuit</Button>
+        <div style={{ color: "var(--gs-white-30)", fontSize: 13, marginTop: 18 }}>Sans carte bancaire · Résultat en 30 secondes</div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer style={{ borderTop: "1px solid var(--gs-white-08)", padding: "44px 0 32px" }}>
+      <div className="container">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+          <Wordmark size={20} />
+          <div style={{ display: "flex", gap: 26, color: "var(--gs-white-30)", fontSize: 13 }}>
+            <a href="#">Mentions légales</a><a href="#">CGU</a><a href="#">Confidentialité</a>
+          </div>
+          <span style={{ color: "var(--gs-white-20)", fontSize: 13 }}>© 2026 GlowScore</span>
+        </div>
+        <p style={{ color: "var(--gs-white-20)", fontSize: 11, lineHeight: 1.6, maxWidth: 760, margin: "28px auto 0", textAlign: "center" }}>
+          GlowScore fournit une information générale produite automatiquement à des fins de divertissement et de bien-être. Les résultats ne constituent en aucun cas un conseil médical, dermatologique ou psychologique personnalisé.
+        </p>
+      </div>
+    </footer>
+  );
+}
+
+function App() {
+  return <><Nav /><Hero /><Preuve /><Analyse /><Science /><Prix /><FinalCTA /><Footer /></>;
+}
+(function boot() {
+  const NS = window.GlowScoreDesignSystem_b335d6;
+  if (!NS || !window.GSIcon || !window.lucide) { return setTimeout(boot, 30); }
+  ({ GlassNav, Button, Card, ScoreRing, ScoreChip, SubScore, GlowBlob, Badge } = NS);
+  Icon = window.GSIcon;
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+})();
+</script>
+</body>
+</html>

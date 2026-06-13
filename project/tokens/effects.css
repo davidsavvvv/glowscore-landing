@@ -1,0 +1,40 @@
+/* ============================================================
+   GlowScore — EFFECTS
+   Gold glows, ambient blob lighting, glass blur, gold gradient.
+   The signature look: black canvas lit by a soft gold radial glow.
+   ============================================================ */
+:root {
+  /* ---- Gold glows (box-shadow) ---- */
+  --gs-glow-card: 0 0 40px rgba(255, 215, 0, 0.06);   /* .card-glow */
+  --gs-glow-soft: 0 0 20px rgba(255, 215, 0, 0.10);
+  --gs-glow-gold: 0 0 20px rgba(255, 215, 0, 0.30);   /* .gold-glow */
+  --gs-glow-ring: 0 0 60px rgba(255, 215, 0, 0.20);   /* score ring halo */
+  --gs-glow-capture: 0 0 40px rgba(255, 215, 0, 0.40);/* scanner capture */
+
+  /* ---- Ambient blob (use as a radial-gradient background, blurred) ---- */
+  --gs-blob-gold: radial-gradient(ellipse, #FFD700 0%, transparent 70%); /* @kind color */
+
+  /* ---- Gold text gradient (.gold-gradient) ---- */
+  --gs-gradient-gold: linear-gradient(135deg, #FFD700, #FFA500); /* @kind color */
+
+  /* ---- Glass surfaces (floating nav / glassy cards) ---- */
+  --gs-glass-bg: rgba(0, 0, 0, 0.60);
+  --gs-glass-blur: blur(16px); /* @kind other */
+
+  /* ---- Transitions ---- */
+  --gs-ease: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --gs-dur-fast: 150ms; /* @kind other */
+  --gs-dur: 300ms; /* @kind other */
+  --gs-dur-slow: 700ms; /* @kind other */
+}
+
+/* Utility classes mirrored from the GlowScore app (globals.css). */
+.gs-gold-gradient {
+  background: var(--gs-gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+.gs-card-glow { box-shadow: var(--gs-glow-card); }
+.gs-gold-glow { box-shadow: var(--gs-glow-gold); }

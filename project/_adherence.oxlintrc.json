@@ -1,0 +1,347 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "components/core/**",
+              "components/effects/**",
+              "components/navigation/**",
+              "components/score/**",
+              "ui_kits/app/**",
+              "ui_kits/shared/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:Playfair Display|Inter))/i]",
+        "message": "Font not provided by the design system. Available: Playfair Display, Inter."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Badge'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|key|ref|className|style|children)$/]",
+        "message": "<Badge> doesn't accept that prop. Declared props: variant."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Badge'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:gold|subtle|outline|soft)$/]",
+        "message": "<Badge> variant must be one of 'gold' | 'subtle' | 'outline' | 'soft'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute > JSXIdentifier[name!=/^(?:variant|size|block|disabled|iconLeft|iconRight|key|ref|className|style|children)$/]",
+        "message": "<Button> doesn't accept that prop. Declared props: variant, size, block, disabled, iconLeft, iconRight."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='variant'] > Literal[value!=/^(?:gold|white|secondary|outline|ghost)$/]",
+        "message": "<Button> variant must be one of 'gold' | 'white' | 'secondary' | 'outline' | 'ghost'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Button'] > JSXAttribute[name.name='size'] > Literal[value!=/^(?:sm|md|lg)$/]",
+        "message": "<Button> size must be one of 'sm' | 'md' | 'lg'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='Card'] > JSXAttribute > JSXIdentifier[name!=/^(?:glass|glow|accent|padding|key|ref|className|style|children)$/]",
+        "message": "<Card> doesn't accept that prop. Declared props: glass, glow, accent, padding."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='GlowBlob'] > JSXAttribute > JSXIdentifier[name!=/^(?:size|opacity|blur|style|key|ref|className|style|children)$/]",
+        "message": "<GlowBlob> doesn't accept that prop. Declared props: size, opacity, blur, style."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='NavItem'] > JSXAttribute > JSXIdentifier[name!=/^(?:icon|active|href|key|ref|className|style|children)$/]",
+        "message": "<NavItem> doesn't accept that prop. Declared props: icon, active, href."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ScoreChip'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|score|tone|key|ref|className|style|children)$/]",
+        "message": "<ScoreChip> doesn't accept that prop. Declared props: label, score, tone."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ScoreChip'] > JSXAttribute[name.name='tone'] > Literal[value!=/^(?:low|mid|high)$/]",
+        "message": "<ScoreChip> tone must be one of 'low' | 'mid' | 'high'."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='ScoreRing'] > JSXAttribute > JSXIdentifier[name!=/^(?:score|max|size|stroke|label|key|ref|className|style|children)$/]",
+        "message": "<ScoreRing> doesn't accept that prop. Declared props: score, max, size, stroke, label."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name='SubScore'] > JSXAttribute > JSXIdentifier[name!=/^(?:label|value|max|key|ref|className|style|children)$/]",
+        "message": "<SubScore> doesn't accept that prop. Declared props: label, value, max."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {
+      "Badge": {
+        "replaces": []
+      },
+      "Button": {
+        "replaces": []
+      },
+      "Card": {
+        "replaces": []
+      },
+      "GlassNav": {
+        "replaces": []
+      },
+      "GlowBlob": {
+        "replaces": []
+      },
+      "Input": {
+        "replaces": []
+      },
+      "NavItem": {
+        "replaces": []
+      },
+      "ScoreChip": {
+        "replaces": []
+      },
+      "ScoreRing": {
+        "replaces": []
+      },
+      "SubScore": {
+        "replaces": []
+      }
+    },
+    "tokens": [
+      "--accent",
+      "--accent-fg",
+      "--border-card",
+      "--font-body",
+      "--font-heading",
+      "--gs-bg",
+      "--gs-bg-landing",
+      "--gs-black",
+      "--gs-blob-gold",
+      "--gs-border",
+      "--gs-border-soft",
+      "--gs-border-strong",
+      "--gs-destructive",
+      "--gs-dur",
+      "--gs-dur-fast",
+      "--gs-dur-slow",
+      "--gs-ease",
+      "--gs-fg",
+      "--gs-font-mono",
+      "--gs-font-sans",
+      "--gs-font-serif",
+      "--gs-glass-bg",
+      "--gs-glass-blur",
+      "--gs-glow-capture",
+      "--gs-glow-card",
+      "--gs-glow-gold",
+      "--gs-glow-ring",
+      "--gs-glow-soft",
+      "--gs-gold",
+      "--gs-gold-deep",
+      "--gs-gold-fg",
+      "--gs-gold-hover",
+      "--gs-gradient-gold",
+      "--gs-leading-normal",
+      "--gs-leading-relaxed",
+      "--gs-leading-snug",
+      "--gs-leading-tight",
+      "--gs-muted",
+      "--gs-muted-2",
+      "--gs-radius",
+      "--gs-radius-2xl",
+      "--gs-radius-full",
+      "--gs-radius-lg",
+      "--gs-radius-md",
+      "--gs-radius-sm",
+      "--gs-radius-xl",
+      "--gs-score-high",
+      "--gs-score-low",
+      "--gs-score-mid",
+      "--gs-space-1",
+      "--gs-space-10",
+      "--gs-space-12",
+      "--gs-space-16",
+      "--gs-space-2",
+      "--gs-space-24",
+      "--gs-space-3",
+      "--gs-space-32",
+      "--gs-space-4",
+      "--gs-space-5",
+      "--gs-space-6",
+      "--gs-space-8",
+      "--gs-surface",
+      "--gs-surface-2",
+      "--gs-surface-blue",
+      "--gs-text-base",
+      "--gs-text-display",
+      "--gs-text-h1",
+      "--gs-text-h2",
+      "--gs-text-h3",
+      "--gs-text-lg",
+      "--gs-text-sm",
+      "--gs-text-xs",
+      "--gs-tracking-label",
+      "--gs-weight-bold",
+      "--gs-weight-extrabold",
+      "--gs-weight-light",
+      "--gs-weight-medium",
+      "--gs-weight-regular",
+      "--gs-weight-semibold",
+      "--gs-white-02",
+      "--gs-white-05",
+      "--gs-white-08",
+      "--gs-white-10",
+      "--gs-white-20",
+      "--gs-white-30",
+      "--gs-white-40",
+      "--gs-white-50",
+      "--gs-white-60",
+      "--gs-white-70",
+      "--gs-white-90",
+      "--radius-card",
+      "--radius-control",
+      "--radius-panel",
+      "--ring",
+      "--surface-card",
+      "--surface-input",
+      "--surface-page",
+      "--text-body",
+      "--text-faint",
+      "--text-muted"
+    ],
+    "tokenKinds": {
+      "--gs-black": "color",
+      "--gs-bg": "color",
+      "--gs-bg-landing": "color",
+      "--gs-surface": "color",
+      "--gs-surface-2": "color",
+      "--gs-surface-blue": "color",
+      "--gs-gold": "color",
+      "--gs-gold-hover": "color",
+      "--gs-gold-deep": "color",
+      "--gs-gold-fg": "color",
+      "--gs-fg": "color",
+      "--gs-muted": "color",
+      "--gs-muted-2": "color",
+      "--gs-white-90": "color",
+      "--gs-white-70": "color",
+      "--gs-white-60": "color",
+      "--gs-white-50": "color",
+      "--gs-white-40": "color",
+      "--gs-white-30": "color",
+      "--gs-white-20": "color",
+      "--gs-white-10": "color",
+      "--gs-white-08": "color",
+      "--gs-white-05": "color",
+      "--gs-white-02": "color",
+      "--gs-border": "color",
+      "--gs-border-strong": "color",
+      "--gs-border-soft": "color",
+      "--gs-score-low": "color",
+      "--gs-score-mid": "color",
+      "--gs-score-high": "color",
+      "--gs-destructive": "color",
+      "--surface-page": "color",
+      "--surface-card": "color",
+      "--surface-input": "color",
+      "--text-body": "font",
+      "--text-muted": "font",
+      "--text-faint": "font",
+      "--border-card": "color",
+      "--accent": "color",
+      "--accent-fg": "color",
+      "--ring": "color",
+      "--gs-font-serif": "font",
+      "--gs-font-sans": "font",
+      "--gs-font-mono": "font",
+      "--font-heading": "font",
+      "--font-body": "font",
+      "--gs-text-display": "font",
+      "--gs-text-h1": "font",
+      "--gs-text-h2": "font",
+      "--gs-text-h3": "font",
+      "--gs-text-lg": "font",
+      "--gs-text-base": "font",
+      "--gs-text-sm": "font",
+      "--gs-text-xs": "font",
+      "--gs-weight-light": "font",
+      "--gs-weight-regular": "font",
+      "--gs-weight-medium": "font",
+      "--gs-weight-semibold": "font",
+      "--gs-weight-bold": "font",
+      "--gs-weight-extrabold": "font",
+      "--gs-leading-tight": "font",
+      "--gs-leading-snug": "font",
+      "--gs-leading-normal": "font",
+      "--gs-leading-relaxed": "font",
+      "--gs-tracking-label": "font",
+      "--gs-space-1": "spacing",
+      "--gs-space-2": "spacing",
+      "--gs-space-3": "spacing",
+      "--gs-space-4": "spacing",
+      "--gs-space-5": "spacing",
+      "--gs-space-6": "spacing",
+      "--gs-space-8": "spacing",
+      "--gs-space-10": "spacing",
+      "--gs-space-12": "spacing",
+      "--gs-space-16": "spacing",
+      "--gs-space-24": "spacing",
+      "--gs-space-32": "spacing",
+      "--gs-radius": "radius",
+      "--gs-radius-sm": "radius",
+      "--gs-radius-md": "radius",
+      "--gs-radius-lg": "radius",
+      "--gs-radius-xl": "radius",
+      "--gs-radius-2xl": "radius",
+      "--gs-radius-full": "radius",
+      "--radius-card": "radius",
+      "--radius-control": "radius",
+      "--radius-panel": "radius",
+      "--gs-glow-card": "shadow",
+      "--gs-glow-soft": "shadow",
+      "--gs-glow-gold": "shadow",
+      "--gs-glow-ring": "shadow",
+      "--gs-glow-capture": "shadow",
+      "--gs-blob-gold": "color",
+      "--gs-gradient-gold": "color",
+      "--gs-glass-bg": "color",
+      "--gs-glass-blur": "other",
+      "--gs-ease": "other",
+      "--gs-dur-fast": "other",
+      "--gs-dur": "other",
+      "--gs-dur-slow": "other"
+    },
+    "fontFamilies": [
+      "Inter",
+      "Playfair Display"
+    ]
+  }
+}

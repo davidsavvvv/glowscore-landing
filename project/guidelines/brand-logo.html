@@ -1,0 +1,29 @@
+<!-- @dsCard group="Brand" viewport="700x230" name="Logo — wordmark & mark" subtitle="Glow in gold + Score in white, Playfair 700; score-ring monogram" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; background:var(--gs-bg); font-family:var(--gs-font-sans); padding:28px; }
+  .row { display:flex; gap:40px; align-items:center; }
+  .wordmark { font-family:var(--gs-font-serif); font-weight:700; font-size:44px; }
+  .wordmark .g { color:var(--gs-gold); }
+  .wordmark .s { color:#fff; }
+  .stack { display:flex; flex-direction:column; gap:18px; }
+  .small { font-size:18px; }
+  img { display:block; }
+  .meta { font-size:10px; color:var(--gs-muted); font-family:var(--gs-font-mono); margin-top:10px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <img src="../assets/logo-mark.svg" width="80" height="80" alt="GlowScore mark">
+    <div class="stack">
+      <div class="wordmark"><span class="g">Glow</span><span class="s">Score</span></div>
+      <div class="wordmark small"><span class="g">Glow</span><span class="s">Score</span></div>
+    </div>
+  </div>
+  <div class="meta">Playfair Display 700 · "Glow" #FFD700 · "Score" #FFFFFF · monogram = animated score ring + G</div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!-- @template name="GlowScore App" description="Interactive app flow — login, dashboard, simulated face scanner, and scored result with paywall" -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlowScore — App</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<script src="./icon.js"></script>
+<script src="./ds-base.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body, #root { margin: 0; height: 100%; }
+  body { font-family: var(--gs-font-sans); background: #000; }
+  .serif { font-family: var(--gs-font-serif); }
+  @keyframes gs-spin { to { transform: rotate(360deg); } }
+  .gs-spin { animation: gs-spin .8s linear infinite; }
+  @keyframes gs-pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+  .gs-pulse { animation: gs-pulse 1.2s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="screens.jsx"></script>
+<script type="text/babel">
+const { useState } = React;
+function Router() {
+  const [route, setRoute] = useState("login");
+  const [paid, setPaid] = useState(false);
+  const analyses = route === "login" ? [] : [{ date: "13 juin 2026", score: "8.5" }];
+  const go = (r) => { if (r === "scan") setPaid(false); setRoute(r); };
+  if (route === "login") return <window.GSLogin go={go} />;
+  if (route === "scan") return <window.GSScanner go={go} finish={() => setRoute("result")} />;
+  if (route === "result") return <window.GSResult go={go} paid={paid} unlock={() => setPaid(true)} />;
+  return <window.GSDashboard go={go} analyses={analyses} />;
+}
+(function boot() {
+  if (!window.GlowScoreDesignSystem_b335d6 || !window.GSIcon || !window.lucide || !window.GSLogin) { return setTimeout(boot, 30); }
+  ReactDOM.createRoot(document.getElementById("root")).render(<Router />);
+})();
+</script>
+</body>
+</html>

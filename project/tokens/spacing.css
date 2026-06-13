@@ -1,0 +1,34 @@
+/* ============================================================
+   GlowScore — SPACING & RADIUS
+   Tailwind-derived 4px scale. GlowScore leans on generous,
+   rounded shapes (rounded-xl / 2xl) and roomy section padding.
+   ============================================================ */
+:root {
+  /* ---- Spacing scale (4px base) ---- */
+  --gs-space-1: 4px;
+  --gs-space-2: 8px;
+  --gs-space-3: 12px;
+  --gs-space-4: 16px;
+  --gs-space-5: 20px;
+  --gs-space-6: 24px;
+  --gs-space-8: 32px;
+  --gs-space-10: 40px;
+  --gs-space-12: 48px;
+  --gs-space-16: 64px;
+  --gs-space-24: 96px;   /* section vertical rhythm (py-24) */
+  --gs-space-32: 128px;  /* hero / final CTA (py-32) */
+
+  /* ---- Radius ---- */
+  --gs-radius: 0.5rem;                         /* base (--radius) */
+  --gs-radius-sm: calc(var(--gs-radius) * 0.6);
+  --gs-radius-md: calc(var(--gs-radius) * 0.8);
+  --gs-radius-lg: var(--gs-radius);
+  --gs-radius-xl: 0.75rem;   /* rounded-xl — cards, inputs */
+  --gs-radius-2xl: 1rem;     /* rounded-2xl — panels, CTAs, nav pill */
+  --gs-radius-full: 9999px;  /* pills, score rings, avatars */
+
+  /* Semantic aliases */
+  --radius-card: var(--gs-radius-xl);
+  --radius-control: var(--gs-radius-xl);
+  --radius-panel: var(--gs-radius-2xl);
+}

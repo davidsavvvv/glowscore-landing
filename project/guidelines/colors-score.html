@@ -1,0 +1,22 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Score semantics" subtitle="Used only on score readouts: low / on-par / strong" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; background:var(--gs-bg); font-family:var(--gs-font-sans); padding:20px; }
+  .row { display:flex; gap:12px; }
+  .sw { flex:1; border:1px solid var(--gs-white-08); border-radius:var(--gs-radius-xl); height:96px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .score { font-size:28px; font-weight:700; }
+  .name { font-size:11px; color:var(--gs-muted); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="sw"><span class="score" style="color:var(--gs-score-low);">7.4<small style="color:var(--gs-white-20);font-weight:400;">/10</small></span><span class="name">Below par · #ff6b6b</span></div>
+    <div class="sw"><span class="score" style="color:var(--gs-score-mid);">7.7<small style="color:var(--gs-white-20);font-weight:400;">/10</small></span><span class="name">On par · #FFD700</span></div>
+    <div class="sw"><span class="score" style="color:var(--gs-score-high);">8.0<small style="color:var(--gs-white-20);font-weight:400;">/10</small></span><span class="name">Strong · #4ade80</span></div>
+  </div>
+</body>
+</html>

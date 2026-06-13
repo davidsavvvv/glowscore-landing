@@ -1,0 +1,24 @@
+<!-- @dsCard group="Spacing" viewport="700x230" name="Gold glows & ambient light" subtitle="Depth comes from gold light, not grey drop-shadow" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; background:#000; font-family:var(--gs-font-sans); padding:28px; position:relative; overflow:hidden; }
+  .blob { position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:520px; height:240px; border-radius:9999px; background:var(--gs-blob-gold); filter:blur(120px); opacity:.18; pointer-events:none; }
+  .row { display:flex; gap:20px; position:relative; align-items:center; justify-content:center; }
+  .box { width:120px; height:120px; border-radius:var(--gs-radius-2xl); background:var(--gs-surface); border:1px solid var(--gs-white-10); display:flex; align-items:flex-end; padding:10px; box-sizing:border-box; }
+  .name { font-size:10px; color:var(--gs-muted); font-family:var(--gs-font-mono); }
+  .ring { width:90px; height:90px; border-radius:9999px; border:4px solid rgba(255,215,0,.3); background:rgba(255,215,0,.05); display:flex; align-items:center; justify-content:center; color:var(--gs-gold); font-family:var(--gs-font-serif); font-weight:700; font-size:28px; box-shadow:var(--gs-glow-ring); }
+</style>
+</head>
+<body>
+  <div class="blob"></div>
+  <div class="row">
+    <div class="box gs-card-glow"><span class="name">card-glow<br>0 0 40px /.06</span></div>
+    <div class="box gs-gold-glow"><span class="name">gold-glow<br>0 0 20px /.30</span></div>
+    <div class="ring">8.5</div>
+  </div>
+</body>
+</html>

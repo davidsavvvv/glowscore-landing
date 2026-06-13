@@ -1,0 +1,27 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Text — white opacity ladder" subtitle="Text & borders are white at decreasing alpha, not a grey palette" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { margin:0; background:var(--gs-surface); font-family:var(--gs-font-sans); padding:20px; }
+  .row { display:flex; gap:18px; align-items:flex-end; flex-wrap:wrap; }
+  .item { text-align:left; }
+  .demo { font-size:22px; font-weight:600; }
+  .lbl { font-size:10px; color:var(--gs-muted); font-family:var(--gs-font-mono); margin-top:4px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="item"><div class="demo" style="color:#fff;">Aa</div><div class="lbl">white</div></div>
+    <div class="item"><div class="demo" style="color:var(--gs-white-70);">Aa</div><div class="lbl">white/70</div></div>
+    <div class="item"><div class="demo" style="color:var(--gs-white-50);">Aa</div><div class="lbl">white/50</div></div>
+    <div class="item"><div class="demo" style="color:var(--gs-white-40);">Aa</div><div class="lbl">white/40</div></div>
+    <div class="item"><div class="demo" style="color:var(--gs-white-30);">Aa</div><div class="lbl">white/30</div></div>
+    <div class="item"><div class="demo" style="color:var(--gs-white-20);">Aa</div><div class="lbl">white/20</div></div>
+    <div class="item"><div class="demo" style="color:var(--gs-muted);">Aa</div><div class="lbl">#888 muted</div></div>
+    <div class="item"><div class="demo" style="color:var(--gs-muted-2);">Aa</div><div class="lbl">#555 faint</div></div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Score — ScoreRing, SubScore, ScoreChip" subtitle="The score gauge and detail readouts" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body { margin:0; background:var(--gs-bg); font-family:var(--gs-font-sans); padding:24px; }
+  .row { display:flex; gap:28px; align-items:center; }
+  .rowlabel { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--gs-white-30); margin-bottom:12px; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { ScoreRing, SubScore, ScoreChip, Card } = window.GlowScoreDesignSystem_b335d6;
+    function Demo() {
+      return (
+        <div className="row">
+          <ScoreRing score={8.5} />
+          <Card glow style={{ width: 250 }}>
+            <div className="rowlabel">Scores détaillés</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <SubScore label="Structure faciale" value={8.0} />
+              <SubScore label="Peau" value={7.4} />
+              <SubScore label="Harmonie" value={7.7} />
+            </div>
+          </Card>
+          <Card style={{ width: 180 }}>
+            <div className="rowlabel">Score facial</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <ScoreChip label="Mâchoire" score="8.0" tone="high" />
+              <ScoreChip label="Symétrie" score="7.7" tone="mid" />
+              <ScoreChip label="Peau" score="7.4" tone="low" />
+              <ScoreChip label="Yeux" score="7.5" tone="low" />
+            </div>
+          </Card>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<Demo />);
+  </script>
+</body>
+</html>

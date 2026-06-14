@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlowScore — Connais ton visage. Au point près.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+<style>
+/* ── Design System Tokens ── */
+:root {
+  --gs-black: #000000;
+  --gs-bg: #0a0a0a;
+  --gs-surface: #111111;
+  --gs-surface-2: #1a1a1a;
+  --gs-gold: #FFD700;
+  --gs-gold-hover: #FFC200;
+  --gs-gold-deep: #FFA500;
+  --gs-gold-fg: #000000;
+  --gs-fg: #ffffff;
+  --gs-muted: #888888;
+  --gs-muted-2: #555555;
+  --gs-white-90: rgba(255,255,255,0.90);
+  --gs-white-70: rgba(255,255,255,0.70);
+  --gs-white-60: rgba(255,255,255,0.60);
+  --gs-white-50: rgba(255,255,255,0.50);
+  --gs-white-40: rgba(255,255,255,0.40);
+  --gs-white-30: rgba(255,255,255,0.30);
+  --gs-white-20: rgba(255,255,255,0.20);
+  --gs-white-10: rgba(255,255,255,0.10);
+  --gs-white-08: rgba(255,255,255,0.08);
+  --gs-white-05: rgba(255,255,255,0.05);
+  --gs-white-02: rgba(255,255,255,0.02);
+  --gs-border: #222222;
+  --gs-border-strong: #333333;
+  --gs-border-soft: rgba(255,255,255,0.08);
+  --gs-score-low: #ff6b6b;
+  --gs-score-mid: #FFD700;
+  --gs-score-high: #4ade80;
+  --gs-glow-card: 0 0 40px rgba(255,215,0,0.06);
+  --gs-glow-ring: 0 0 60px rgba(255,215,0,0.20);
+  --gs-blob-gold: radial-gradient(ellipse, #FFD700 0%, transparent 70%);
+  --gs-gradient-gold: linear-gradient(135deg, #FFD700, #FFA500);
+  --gs-glass-bg: rgba(0,0,0,0.60);
+  --gs-glass-blur: blur(16px);
+  --gs-ease: cubic-bezier(0.4,0,0.2,1);
+  --gs-dur-fast: 150ms;
+  --gs-dur: 300ms;
+  --gs-dur-slow: 700ms;
+  --gs-font-serif: "Playfair Display", Georgia, serif;
+  --gs-font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --gs-font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --gs-radius: 0.5rem;
+  --gs-radius-sm: calc(var(--gs-radius)*0.6);
+  --gs-radius-md: calc(var(--gs-radius)*0.8);
+  --gs-radius-lg: var(--gs-radius);
+  --gs-radius-xl: 0.75rem;
+  --gs-radius-2xl: 1rem;
+  --gs-radius-full: 9999px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: #070708; color: #fff; font-family: var(--gs-font-sans); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+#app { min-height: 100vh; position: relative; }
+.serif { font-family: var(--gs-font-serif); }
+.accent { color: var(--accent); }
+a { color: inherit; text-decoration: none; }
+a:hover { color: #fff; }
+section { position: relative; z-index: 1; }
+.container { max-width: 1140px; margin: 0 auto; padding: 0 36px; position: relative; }
+.eyebrow { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .26em; color: var(--gs-white-40); display: inline-flex; align-items: center; gap: 12px; font-family: var(--label-font, var(--gs-font-sans)); }
+.eyebrow::before { content: ""; width: 26px; height: 1px; background: var(--accent); opacity: .8; }
+.rule { height: 1px; background: var(--hair); }
+
+.ambient { position: absolute; z-index: 0; pointer-events: none; border-radius: 50%;
+  background: radial-gradient(ellipse at center, var(--accent) 0%, transparent 70%);
+  opacity: var(--glow-op, 0.12); filter: blur(150px); }
+
+.grain::after { content: ""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+.vignette { position: fixed; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(120% 80% at 50% 0%, transparent 58%, rgba(0,0,0,.5) 100%); }
+.hide-proof .proof { display: none; }
+
+.scanline { position: absolute; left: 0; right: 0; height: 2px; top: 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  box-shadow: 0 0 14px var(--accent-glow-strong, rgba(231,200,124,0.7)); opacity: .8; }
+.proto-card:hover { border-color: var(--accent) !important; transform: translateY(-3px); }
+::selection { background: var(--accent-glow, rgba(231,200,124,0.4)); }
+
+@keyframes gs-rise { from { transform: translateY(24px); } to { transform: none; } }
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal].animate { animation: gs-rise .8s var(--gs-ease) both; }
+  .scanline { animation: scan 3.4s var(--gs-ease) infinite; }
+  @keyframes scan { 0% { top: 4%; opacity: 0; } 12% { opacity: .85; } 88% { opacity: .85; } 100% { top: 96%; opacity: 0; } }
+}
+
+@media (max-width: 860px) {
+  .hero-grid, .dash-grid, .steps-grid, .sci-grid, .price-grid, .proto-grid, .lever-grid { grid-template-columns: 1fr !important; }
+  .hero-grid > div:last-child { order: -1; }
+  .steps-grid > div { border-right: none !important; padding-left: 0 !important; border-bottom: 1px solid var(--gs-white-05); }
+  .sci-grid > div { border-right: none !important; padding-left: 0 !important; }
+  .navlinks { display: none !important; }
+  .container { padding: 0 22px; }
+}
+</style>
+</head>
+<body class="grain">
+<div class="vignette"></div>
+<div id="root"></div>
+
+<script>
+/* ── GSIcon: Lucide wrapper ── */
+(function () {
+  function Icon({ name, size = 16, color = "currentColor", strokeWidth = 2, style = {} }) {
+    const ref = React.useRef(null);
+    React.useEffect(() => {
+      const host = ref.current;
+      if (!host || !window.lucide) return;
+      host.innerHTML = "";
+      const el = document.createElement("i");
+      el.setAttribute("data-lucide", name);
+      host.appendChild(el);
+      window.lucide.createIcons({
+        attrs: { width: size, height: size, "stroke-width": strokeWidth, stroke: color },
+        nameAttr: "data-lucide",
+      });
+    });
+    return React.createElement("span", {
+      ref,
+      style: { display: "inline-flex", width: size, height: size, color, ...style },
+    });
+  }
+  window.GSIcon = Icon;
+})();
+</script>
+
+<script type="text/babel">
+/* ═══════════════════════════════════════════════════════════════
+   GlowScore Design System — inlined components
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Badge ── */
+function Badge({ children, variant = "gold", style = {}, ...props }) {
+  const variants = {
+    gold: { background: "var(--gs-gold)", color: "#000", border: "1px solid transparent" },
+    subtle: { background: "var(--gs-white-05)", color: "var(--gs-white-30)", border: "1px solid var(--gs-white-08)" },
+    outline: { background: "transparent", color: "var(--gs-white-50)", border: "1px solid var(--gs-white-10)" },
+    soft: { background: "rgba(255,215,0,0.10)", color: "var(--gs-gold)", border: "1px solid rgba(255,215,0,0.20)" },
+  };
+  return (
+    <span style={{ display:"inline-flex", alignItems:"center", gap:4, height:22, padding:"0 10px",
+      fontSize:12, fontWeight:700, fontFamily:"var(--gs-font-sans)", borderRadius:"var(--gs-radius-full)",
+      whiteSpace:"nowrap", lineHeight:1, ...variants[variant], ...style }} {...props}>{children}</span>
+  );
+}
+
+/* ── Button ── */
+function Button({ children, variant="gold", size="md", block=false, disabled=false,
+    iconLeft=null, iconRight=null, style={}, ...props }) {
+  const [hover, setHover] = React.useState(false);
+  const SIZES = {
+    sm: { height:32, padding:"0 14px", fontSize:13, radius:"var(--gs-radius-lg)", gap:6 },
+    md: { height:44, padding:"0 20px", fontSize:14, radius:"var(--gs-radius-xl)", gap:8 },
+    lg: { height:56, padding:"0 32px", fontSize:16, radius:"var(--gs-radius-2xl)", gap:8 },
+  };
+  const s = SIZES[size] || SIZES.md;
+  const base = (v, h) => {
+    switch(v) {
+      case "gold":    return { background: h?"var(--gs-gold-hover)":"var(--gs-gold)", color:"#000", border:"1px solid transparent" };
+      case "white":   return { background: h?"rgba(255,255,255,0.9)":"#fff", color:"#000", border:"1px solid transparent" };
+      case "outline": return { background: h?"var(--gs-surface-2)":"transparent", color:"#fff", border:"1px solid var(--gs-border-strong)" };
+      case "ghost":   return { background: h?"var(--gs-white-05)":"transparent", color:h?"#fff":"var(--gs-white-50)", border:"1px solid transparent" };
+      default:        return {};
+    }
+  };
+  return (
+    <button onMouseEnter={()=>setHover(true)} onMouseLeave={()=>setHover(false)}
+      disabled={disabled}
+      style={{ display:block?"flex":"inline-flex", width:block?"100%":"auto", alignItems:"center",
+        justifyContent:"center", gap:s.gap, height:s.height, padding:s.padding, fontSize:s.fontSize,
+        fontWeight:700, fontFamily:"var(--gs-font-sans)", lineHeight:1, borderRadius:s.radius,
+        cursor:disabled?"not-allowed":"pointer", opacity:disabled?0.5:1,
+        transition:"background var(--gs-dur-fast) var(--gs-ease)",
+        whiteSpace:"nowrap", ...base(variant, hover&&!disabled), ...style }} {...props}>
+      {iconLeft}{children}{iconRight}
+    </button>
+  );
+}
+
+/* ── Card ── */
+function Card({ children, glass=false, glow=false, accent=false, padding=20, style={}, ...props }) {
+  return (
+    <div style={{
+      background: glass?"rgba(0,0,0,0.40)":"var(--gs-surface)",
+      backdropFilter: glass?"var(--gs-glass-blur)":undefined,
+      WebkitBackdropFilter: glass?"var(--gs-glass-blur)":undefined,
+      border: accent?"1px solid rgba(255,215,0,0.30)":"1px solid var(--gs-white-08)",
+      borderRadius:"var(--gs-radius-2xl)",
+      boxShadow: glow?"var(--gs-glow-card)":undefined,
+      padding, color:"var(--gs-fg)", boxSizing:"border-box", ...style }} {...props}>
+      {children}
+    </div>
+  );
+}
+
+/* ── GlassNav ── */
+function GlassNav({ children, style={}, ...props }) {
+  return (
+    <nav style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+      gap:32, width:"100%", maxWidth:880, padding:"12px 20px",
+      borderRadius:"var(--gs-radius-2xl)", border:"1px solid var(--gs-white-10)",
+      background:"var(--gs-glass-bg)", backdropFilter:"var(--gs-glass-blur)",
+      WebkitBackdropFilter:"var(--gs-glass-blur)", boxSizing:"border-box", ...style }} {...props}>
+      {children}
+    </nav>
+  );
+}
+
+/* ── ScoreChip ── */
+function ScoreChip({ label, score, tone="mid" }) {
+  const colors = { low:"var(--gs-score-low)", mid:"var(--gs-score-mid)", high:"var(--gs-score-high)" };
+  return (
+    <div style={{ fontFamily:"var(--gs-font-sans)" }}>
+      <div style={{ fontSize:12, color:"var(--gs-white-40)", marginBottom:2 }}>{label}</div>
+      <div style={{ fontSize:14, fontWeight:700, color:colors[tone]||colors.mid }}>
+        {score}<span style={{ color:"var(--gs-white-20)", fontSize:12, fontWeight:400 }}>/10</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── ScoreRing ── */
+function ScoreRing({ score=8.5, max=10, size=176, stroke=10, label="/10", numSize, labelSize }) {
+  const radius = (size - stroke*2)/2;
+  const circumference = 2*Math.PI*radius;
+  const pct = Math.max(0, Math.min(1, score/max));
+  const offset = circumference - pct*circumference;
+  const c = size/2;
+  const num = numSize!=null?numSize:size*0.55;
+  const lab = labelSize!=null?labelSize:num*0.32;
+  return (
+    <div style={{ position:"relative", width:size, height:size, display:"flex",
+      alignItems:"center", justifyContent:"center", filter:"drop-shadow(var(--gs-glow-ring))" }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}
+        style={{ position:"absolute", inset:0, transform:"rotate(-90deg)" }}>
+        <circle cx={c} cy={c} r={radius} stroke="var(--gs-border)" strokeWidth={stroke} fill="none" />
+        <circle cx={c} cy={c} r={radius} stroke="var(--gs-gold)" strokeWidth={stroke} fill="none"
+          strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round"
+          style={{ transition:"stroke-dashoffset 1s var(--gs-ease)" }} />
+      </svg>
+      <div style={{ textAlign:"center", zIndex:1, lineHeight:1 }}>
+        <span style={{ fontFamily:"var(--gs-font-serif)", fontWeight:700, fontSize:num, color:"var(--gs-gold)" }}>{score}</span>
+        <span style={{ color:"var(--gs-muted)", fontSize:lab, marginLeft:2 }}>{label}</span>
+      </div>
+    </div>
+  );
+}
+
+/* ── SubScore ── */
+function SubScore({ label, value=0, max=10 }) {
+  const pct = Math.max(0, Math.min(100, value/max*100));
+  return (
+    <div style={{ fontFamily:"var(--gs-font-sans)" }}>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"baseline", fontSize:14, marginBottom:6 }}>
+        <span style={{ color:"var(--gs-muted)" }}>{label}</span>
+        <span style={{ color:"#fff", fontWeight:500 }}>{value}<span style={{ color:"var(--gs-white-30)" }}>/{max}</span></span>
+      </div>
+      <div style={{ height:8, background:"var(--gs-border)", borderRadius:"var(--gs-radius-full)", overflow:"hidden" }}>
+        <div style={{ height:"100%", width:`${pct}%`, background:"var(--gs-gold)",
+          borderRadius:"var(--gs-radius-full)", transition:"width var(--gs-dur-slow) var(--gs-ease)" }} />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Tweaks Panel
+   ═══════════════════════════════════════════════════════════════ */
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;overflow-x:hidden;min-height:0}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;overflow-wrap:anywhere}
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+`;
+
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits==='object'&&keyOrEdits!==null ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type:'__edit_mode_set_keys', edits }, '*');
+  }, []);
+  return [values, setTweak];
+}
+
+function TweaksPanel({ title='Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x:16, y:16 });
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t==='__activate_edit_mode') setOpen(true);
+      else if (t==='__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type:'__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => { setOpen(false); window.parent.postMessage({ type:'__edit_mode_dismissed' }, '*'); };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx=e.clientX, sy=e.clientY;
+    const startRight=window.innerWidth-r.right, startBottom=window.innerHeight-r.bottom;
+    const move = (ev) => {
+      offsetRef.current = { x:startRight-(ev.clientX-sx), y:startBottom-(ev.clientY-sy) };
+      panel.style.right=offsetRef.current.x+'px'; panel.style.bottom=offsetRef.current.y+'px';
+    };
+    const up = () => { window.removeEventListener('mousemove',move); window.removeEventListener('mouseup',up); };
+    window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" style={{ right:offsetRef.current.x, bottom:offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" onMouseDown={e=>e.stopPropagation()} onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">{children}</div>
+      </div>
+    </>
+  );
+}
+
+function TweakSection({ label }) {
+  return <div className="twk-sect">{label}</div>;
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+  const opts = options.map(o => typeof o==='object' ? o : { value:o, label:o });
+  const idx = Math.max(0, opts.findIndex(o=>o.value===value));
+  const n = opts.length;
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width-4;
+    const i = Math.floor(((clientX-r.left-2)/inner)*n);
+    return opts[Math.max(0,Math.min(n-1,i))].value;
+  };
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0=segAt(e.clientX);
+    if (v0!==valueRef.current) onChange(v0);
+    const move=(ev)=>{ if(trackRef.current){ const v=segAt(ev.clientX); if(v!==valueRef.current)onChange(v); } };
+    const up=()=>{ setDragging(false); window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',up); };
+    window.addEventListener('pointermove',move); window.addEventListener('pointerup',up);
+  };
+  return (
+    <div className="twk-row">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown} className={dragging?'twk-seg dragging':'twk-seg'}>
+        <div className="twk-seg-thumb" style={{ left:`calc(2px + ${idx} * (100% - 4px) / ${n})`, width:`calc((100% - 4px) / ${n})` }} />
+        {opts.map(o=><button key={o.value} type="button" role="radio" aria-checked={o.value===value}>{o.label}</button>)}
+      </div>
+    </div>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value?'1':'0'}
+        role="switch" aria-checked={!!value} onClick={()=>onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Funnel — shared
+   ═══════════════════════════════════════════════════════════════ */
+function Wordmark({ size=18 }) {
+  return (
+    <span className="serif" style={{ fontWeight:700, fontSize:size, letterSpacing:".01em" }}>
+      <span className="accent">Glow</span>Score
+    </span>
+  );
+}
+function Eyebrow({ children, style }) {
+  return <div className="eyebrow" style={style}>{children}</div>;
+}
+
+/* ── Facial scan frame ── */
+function ScanFrame({ width=360 }) {
+  const Icon = window.GSIcon;
+  const pts = [
+    [39,40],[61,40],[50,31],[29,50],[71,50],
+    [50,54],[50,64],[33,60],[67,60],[50,75],
+  ];
+  const lines = [[0,1],[3,0],[1,4],[3,5],[5,4],[5,6],[7,9],[9,8],[7,3],[8,4]];
+  return (
+    <div className="scan" style={{ width, maxWidth:"100%", aspectRatio:"0.74", position:"relative",
+      borderRadius:"var(--gs-radius-2xl)", overflow:"hidden",
+      border:"1px solid var(--hair)", boxShadow:"0 50px 120px rgba(0,0,0,.6), var(--card-glow)" }}>
+      <img src="portrait.jpg" alt="Analyse faciale" draggable={false}
+        style={{ position:"absolute", inset:0, width:"100%", height:"100%", objectFit:"cover", filter:"grayscale(.25) contrast(1.04)" }} />
+      <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg, rgba(7,7,8,.35) 0%, transparent 28%, transparent 62%, rgba(7,7,8,.82) 100%)" }} />
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{ position:"absolute", inset:0, width:"100%", height:"100%" }}>
+        {lines.map(([a,b],i)=>(
+          <line key={i} x1={pts[a][0]} y1={pts[a][1]} x2={pts[b][0]} y2={pts[b][1]}
+            stroke="var(--accent)" strokeWidth="0.18" opacity="0.5" vectorEffect="non-scaling-stroke" />
+        ))}
+        {pts.map(([x,y],i)=>(
+          <circle key={i} cx={x} cy={y} r="0.7" fill="var(--accent)" opacity="0.9" />
+        ))}
+      </svg>
+      <div className="scanline" />
+      {[["top","left"],["top","right"],["bottom","left"],["bottom","right"]].map(([v,h])=>(
+        <span key={v+h} style={{ position:"absolute", [v]:16, [h]:16, width:18, height:18,
+          [`border${v[0].toUpperCase()+v.slice(1)}`]:"1px solid var(--accent)",
+          [`border${h[0].toUpperCase()+h.slice(1)}`]:"1px solid var(--accent)", opacity:.55 }} />
+      ))}
+      <div style={{ position:"absolute", left:16, top:"32%" }}><MiniTag label="Symétrie" v="8.2" /></div>
+      <div style={{ position:"absolute", right:16, top:"50%" }}><MiniTag label="Mâchoire" v="8.6" right /></div>
+      <div style={{ position:"absolute", left:16, bottom:18 }}><MiniTag label="Harmonie" v="7.9" /></div>
+    </div>
+  );
+}
+
+function MiniTag({ label, v, right }) {
+  return (
+    <div style={{ display:"inline-flex", alignItems:"center", gap:8, padding:"7px 12px",
+      background:"rgba(8,8,10,.6)", backdropFilter:"blur(10px)", WebkitBackdropFilter:"blur(10px)",
+      border:"1px solid var(--hair)", borderRadius:999, flexDirection:right?"row-reverse":"row",
+      boxShadow:"0 8px 24px rgba(0,0,0,.4)" }}>
+      <span style={{ fontSize:10.5, letterSpacing:".14em", textTransform:"uppercase", color:"var(--gs-white-50)", fontFamily:"var(--label-font, var(--gs-font-sans))" }}>{label}</span>
+      <span className="serif accent" style={{ fontSize:16, fontWeight:700, lineHeight:1 }}>{v}</span>
+    </div>
+  );
+}
+
+/* ── NAV ── */
+function Nav() {
+  return (
+    <div style={{ position:"sticky", top:18, zIndex:50, display:"flex", justifyContent:"center", padding:"0 20px" }}>
+      <GlassNav style={{ maxWidth:1000, padding:"13px 22px", borderColor:"var(--hair)" }}>
+        <Wordmark />
+        <div className="navlinks" style={{ display:"flex", gap:30, fontSize:13, letterSpacing:".03em", color:"var(--gs-white-50)" }}>
+          <a href="#method">Méthode</a><a href="#analyse">Analyse</a><a href="#potentiel">Potentiel</a><a href="#protocoles">Protocoles</a>
+        </div>
+        <Button variant="outline" size="sm">Mon analyse</Button>
+      </GlassNav>
+    </div>
+  );
+}
+
+/* ── HERO ── */
+function Hero() {
+  return (
+    <section style={{ overflow:"hidden", paddingTop:64, paddingBottom:64 }}>
+      <div className="ambient" style={{ top:-160, left:"50%", transform:"translateX(-50%)", width:1000, height:560 }} />
+      <div className="container" style={{ position:"relative" }}>
+        <div className="hero-grid" style={{ display:"grid", gridTemplateColumns:"1.1fr 0.9fr", gap:56, alignItems:"center" }}>
+          <div data-reveal>
+            <Eyebrow>Analyse faciale objective</Eyebrow>
+            <h1 className="serif" style={{ fontWeight:700, fontSize:"clamp(44px,6vw,82px)", lineHeight:.98, letterSpacing:"-.022em", margin:"24px 0 0" }}>
+              Devient un 10.<br/><span className="accent" style={{ fontStyle:"italic", fontSize:52 }}>aux yeux des femmes.</span>
+            </h1>
+            <p style={{ color:"var(--gs-white-60)", fontSize:18, maxWidth:460, margin:"26px 0 0", lineHeight:1.6 }}>
+              Une photo, trente secondes. L'IA mesure ta morphologie, te note sur 10 sur chaque critère, et trace le protocole exact pour atteindre ton potentiel.
+            </p>
+            <div style={{ display:"flex", gap:14, marginTop:34, flexWrap:"wrap" }}>
+              <Button variant="gold" size="lg" iconRight={<window.GSIcon name="arrow-right" size={16} color="#000" />}>Lancer mon analyse</Button>
+              <Button variant="ghost" size="lg" iconLeft={<window.GSIcon name="play" size={15} color="var(--gs-white-50)" />}>Voir un exemple</Button>
+            </div>
+            <div className="proof" style={{ display:"flex", gap:20, alignItems:"center", marginTop:30, color:"var(--gs-white-40)", fontSize:13 }}>
+              <span style={{ display:"inline-flex", gap:2 }}>{"★★★★★".split("").map((s,i)=><span key={i} className="accent">★</span>)}</span>
+              <span><b style={{ color:"#fff" }}>4,9</b>/5</span>
+              <span style={{ width:1, height:14, background:"var(--gs-white-10)" }} />
+              <span><b style={{ color:"#fff" }}>120 000+</b> analyses</span>
+            </div>
+          </div>
+          <div data-reveal style={{ display:"flex", justifyContent:"center" }}>
+            <ScanFrame width={380} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── STEPS ── */
+function Steps() {
+  const steps = [
+    ["camera","Une photo","Un selfie de face, lumière neutre. Aucune retouche, aucun filtre — l'objectivité commence là."],
+    ["scan-face","L'analyse","L'IA place les repères, mesure les ratios morphologiques et note chaque critère sur 10."],
+    ["route","Le protocole","Un plan d'action personnalisé, classé par impact, pour combler l'écart avec ton potentiel."],
+  ];
+  return (
+    <section id="method" style={{ padding:"110px 0", borderTop:"1px solid var(--gs-white-05)" }}>
+      <div className="container">
+        <div data-reveal style={{ maxWidth:640, marginBottom:56 }}>
+          <Eyebrow>01 — Méthode</Eyebrow>
+          <h2 className="serif" style={{ fontWeight:700, fontSize:"clamp(32px,4.5vw,54px)", lineHeight:1.04, letterSpacing:"-.02em", margin:"20px 0 0" }}>
+            Trois étapes. <span className="accent" style={{ fontStyle:"italic" }}>Zéro flou.</span>
+          </h2>
+        </div>
+        <div className="steps-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:0, borderTop:"1px solid var(--hair)" }}>
+          {steps.map(([icon,t,d],i)=>(
+            <div key={t} data-reveal style={{ padding:"36px 28px 36px 0", borderRight:i<2?"1px solid var(--gs-white-05)":"none", paddingLeft:i?28:0 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:22 }}>
+                <span className="serif" style={{ fontSize:13, fontWeight:700, color:"var(--accent)", fontFamily:"var(--label-font, var(--gs-font-sans))", letterSpacing:".1em" }}>{String(i+1).padStart(2,"0")}</span>
+                <span style={{ flex:1, height:1, background:"var(--gs-white-08)" }} />
+                <window.GSIcon name={icon} size={19} color="var(--accent)" />
+              </div>
+              <h3 className="serif" style={{ fontSize:24, fontWeight:600, margin:"0 0 10px" }}>{t}</h3>
+              <p style={{ color:"var(--gs-white-50)", fontSize:14.5, lineHeight:1.6, margin:0 }}>{d}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── ANALYSE dashboard ── */
+function Analyse() {
+  const chips = [["Harmonie","7.9","mid"],["Projection","8.1","high"],["Mâchoire","8.6","high"],["Symétrie","8.2","mid"]];
+  const subs = [["Structure faciale",8.4],["Peau & éclat",7.4],["Cadre & soins",7.8]];
+  const recos = ["Coiffure structurante adaptée à ta morphologie","Routine peau ciblée éclat + texture","Définition de la mâchoire (posture, masse grasse)","Cadre du regard : sourcils & repos"];
+  return (
+    <section id="analyse" style={{ padding:"110px 0", overflow:"hidden", borderTop:"1px solid var(--gs-white-05)" }}>
+      <div className="ambient" style={{ top:"44%", left:"78%", transform:"translate(-50%,-50%)", width:760, height:540 }} />
+      <div className="container" style={{ position:"relative" }}>
+        <div data-reveal style={{ maxWidth:660, marginBottom:52 }}>
+          <Eyebrow>02 — L'analyse</Eyebrow>
+          <h2 className="serif" style={{ fontWeight:700, fontSize:"clamp(32px,4.5vw,54px)", lineHeight:1.04, letterSpacing:"-.02em", margin:"20px 0 16px" }}>
+            Chaque détail, <span className="accent" style={{ fontStyle:"italic" }}>mesuré.</span>
+          </h2>
+          <p style={{ color:"var(--gs-white-50)", fontSize:16.5, lineHeight:1.6, margin:0 }}>
+            Des dizaines de critères morphologiques décomposés pour comprendre ton esthétique — et savoir précisément quoi travailler.
+          </p>
+        </div>
+        <div className="dash-grid" data-reveal style={{ display:"grid", gridTemplateColumns:"1fr 1.1fr 1fr", gap:18, alignItems:"stretch" }}>
+          <Card glass style={{ display:"flex", flexDirection:"column", justifyContent:"center", borderColor:"var(--hair)" }}>
+            <div className="eyebrow" style={{ marginBottom:18 }}>Score facial</div>
+            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+              {chips.map(([l,s,t])=><ScoreChip key={l} label={l} score={s} tone={t} />)}
+            </div>
+          </Card>
+          <Card glow style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:20, padding:28, borderColor:"var(--hair)" }}>
+            <ScoreRing score={8.1} size={150} stroke={1} numSize={63} labelSize={16} />
+            <div style={{ width:"100%", display:"flex", flexDirection:"column", gap:14 }}>
+              {subs.map(([l,v])=><SubScore key={l} label={l} value={v} />)}
+            </div>
+          </Card>
+          <Card glass style={{ borderColor:"var(--hair)" }}>
+            <div className="eyebrow" style={{ marginBottom:18 }}>Ton plan</div>
+            <ul style={{ listStyle:"none", margin:0, padding:0, display:"flex", flexDirection:"column", gap:16 }}>
+              {recos.map((r,i)=>(
+                <li key={r} style={{ display:"flex", gap:12, fontSize:14, color:"var(--gs-white-60)", alignItems:"flex-start", lineHeight:1.45 }}>
+                  <span className="serif accent" style={{ fontSize:13, fontWeight:700, minWidth:18, fontFamily:"var(--label-font, var(--gs-font-sans))" }}>{String(i+1).padStart(2,"0")}</span>
+                  <span>{r}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── POTENTIEL ── */
+function Potentiel() {
+  const ref = React.useRef(null);
+  const [on, setOn] = React.useState(false);
+  const cur=7.4, pot=9.1;
+  const [val, setVal] = React.useState(cur);
+  React.useEffect(()=>{
+    let n=0;
+    const poll=setInterval(()=>{
+      n++;
+      const el=ref.current;
+      if (el&&el.getBoundingClientRect().top<window.innerHeight*0.8){setOn(true);clearInterval(poll);}
+      else if (n>80){setOn(true);clearInterval(poll);}
+    },120);
+    return()=>clearInterval(poll);
+  },[]);
+  React.useEffect(()=>{
+    if(!on)return;
+    const steps=34;let i=0;
+    const iv=setInterval(()=>{
+      i++;const k=i/steps;const e=1-Math.pow(1-k,3);
+      setVal(cur+(pot-cur)*e);
+      if(i>=steps){setVal(pot);clearInterval(iv);}
+    },34);
+    return()=>clearInterval(iv);
+  },[on]);
+  const pct=(x)=>((x-5)/5)*100;
+  return (
+    <section id="potentiel" ref={ref} style={{ padding:"120px 0", overflow:"hidden", borderTop:"1px solid var(--gs-white-05)" }}>
+      <div className="ambient" style={{ top:"50%", left:"20%", transform:"translate(-50%,-50%)", width:760, height:520 }} />
+      <div className="container" style={{ position:"relative" }}>
+        <div data-reveal style={{ maxWidth:680, marginBottom:56 }}>
+          <Eyebrow>03 — Ton potentiel</Eyebrow>
+          <h2 className="serif" style={{ fontWeight:700, fontSize:"clamp(32px,4.5vw,54px)", lineHeight:1.04, letterSpacing:"-.02em", margin:"20px 0 16px" }}>
+            Tu n'es pas ta note. <span className="accent" style={{ fontStyle:"italic" }}>Tu es ton écart.</span>
+          </h2>
+          <p style={{ color:"var(--gs-white-50)", fontSize:16.5, lineHeight:1.6, margin:0, maxWidth:540 }}>
+            GlowScore ne te juge pas — il mesure la distance entre où tu es et où tu peux être. Le protocole comble cet écart.
+          </p>
+        </div>
+        <div data-reveal style={{ maxWidth:880, margin:"0 auto" }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:22 }}>
+            <div>
+              <div style={{ fontSize:11, letterSpacing:".22em", textTransform:"uppercase", color:"var(--gs-white-40)", fontFamily:"var(--label-font, var(--gs-font-sans))", marginBottom:8 }}>Actuel</div>
+              <div className="serif" style={{ fontSize:48, fontWeight:700, color:"var(--gs-white-70)", lineHeight:1 }}>{cur.toFixed(1)}</div>
+            </div>
+            <div style={{ textAlign:"center", paddingBottom:6 }}>
+              <div className="serif accent" style={{ fontSize:22, fontWeight:700 }}>+{(pot-cur).toFixed(1)}</div>
+              <div style={{ fontSize:11, letterSpacing:".14em", textTransform:"uppercase", color:"var(--gs-white-30)", fontFamily:"var(--label-font, var(--gs-font-sans))" }}>de marge</div>
+            </div>
+            <div style={{ textAlign:"right" }}>
+              <div style={{ fontSize:11, letterSpacing:".22em", textTransform:"uppercase", color:"var(--accent)", fontFamily:"var(--label-font, var(--gs-font-sans))", marginBottom:8 }}>Potentiel</div>
+              <div className="serif accent" style={{ fontSize:64, fontWeight:700, lineHeight:1, textShadow:"0 0 40px var(--accent-glow-strong)" }}>{val.toFixed(1)}</div>
+            </div>
+          </div>
+          <div style={{ position:"relative", height:10, borderRadius:999, background:"var(--gs-white-05)", border:"1px solid var(--hair)" }}>
+            <div style={{ position:"absolute", left:0, top:0, bottom:0, width:`${pct(cur)}%`, borderRadius:999, background:"var(--gs-white-20)" }} />
+            <div style={{ position:"absolute", left:`${pct(cur)}%`, top:0, bottom:0, width:`${pct(val)-pct(cur)}%`, borderRadius:999, background:"var(--accent)", boxShadow:"0 0 16px var(--accent-glow)" }} />
+            <span style={{ position:"absolute", left:`${pct(val)}%`, top:"50%", transform:"translate(-50%,-50%)", width:18, height:18, borderRadius:999, background:"var(--accent)", boxShadow:"0 0 16px var(--accent-glow-strong)", display:"block" }} />
+          </div>
+          <div style={{ display:"flex", justifyContent:"space-between", marginTop:10, fontSize:11, color:"var(--gs-white-30)", fontFamily:"var(--label-font, var(--gs-font-sans))", letterSpacing:".1em" }}>
+            <span>5.0</span><span>10.0</span>
+          </div>
+          <div className="lever-grid" style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:14, marginTop:36 }}>
+            {[["Peau","+0.6"],["Cadre & cheveux","+0.7"],["Définition","+0.4"]].map(([l,d])=>(
+              <div key={l} style={{ padding:"18px 20px", border:"1px solid var(--hair)", borderRadius:"var(--gs-radius-xl)", background:"var(--gs-white-02)" }}>
+                <div className="serif accent" style={{ fontSize:26, fontWeight:700, lineHeight:1 }}>{d}</div>
+                <div style={{ color:"var(--gs-white-50)", fontSize:13, marginTop:6 }}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── PROTOCOLES ── */
+function Protocoles() {
+  const items = [
+    ["sparkles","Peau","Texture, éclat, uniformité. Routine ciblée selon ton type de peau et tes zones faibles."],
+    ["scissors","Cheveux & cadre","La coupe qui structure ta morphologie, densité, ligne de front et entretien."],
+    ["dumbbell","Définition","Mâchoire, pommettes, masse grasse faciale — leviers posturaux et de composition."],
+    ["shirt","Style & présence","Cols, encolures et palette qui prolongent tes traits au lieu de les écraser."],
+  ];
+  return (
+    <section id="protocoles" style={{ padding:"110px 0", borderTop:"1px solid var(--gs-white-05)", overflow:"hidden" }}>
+      <div className="container">
+        <div data-reveal style={{ maxWidth:660, marginBottom:52 }}>
+          <Eyebrow>04 — Protocoles</Eyebrow>
+          <h2 className="serif" style={{ fontWeight:700, fontSize:"clamp(32px,4.5vw,54px)", lineHeight:1.04, letterSpacing:"-.02em", margin:"20px 0 16px" }}>
+            Pas des conseils. <span className="accent" style={{ fontStyle:"italic" }}>Un protocole.</span>
+          </h2>
+          <p style={{ color:"var(--gs-white-50)", fontSize:16.5, lineHeight:1.6, margin:0 }}>
+            Chaque levier est isolé, priorisé par impact et traduit en actions concrètes. Tu sais quoi faire, dans quel ordre.
+          </p>
+        </div>
+        <div className="proto-grid" style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:18 }}>
+          {items.map(([icon,t,d],i)=>(
+            <div key={t} data-reveal className="proto-card" style={{ position:"relative", display:"flex", gap:20, padding:26,
+              border:"1px solid var(--hair)", borderRadius:"var(--gs-radius-2xl)", background:"var(--gs-white-02)",
+              transition:"border-color .3s, transform .3s" }}>
+              <span style={{ position:"absolute", top:24, right:24, fontSize:11, color:"var(--gs-white-30)", fontFamily:"var(--label-font, var(--gs-font-sans))", letterSpacing:".1em" }}>{String(i+1).padStart(2,"0")}</span>
+              <div style={{ flexShrink:0, width:46, height:46, borderRadius:12, border:"1px solid var(--hair)", display:"flex", alignItems:"center", justifyContent:"center", background:"var(--accent-tint)" }}>
+                <window.GSIcon name={icon} size={20} color="var(--accent)" />
+              </div>
+              <div style={{ paddingRight:18 }}>
+                <h3 className="serif" style={{ fontSize:21, fontWeight:600, margin:"2px 0 8px", lineHeight:1.15 }}>{t}</h3>
+                <p style={{ color:"var(--gs-white-50)", fontSize:14, lineHeight:1.55, margin:0 }}>{d}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── SCIENCE ── */
+function Science() {
+  const stats = [
+    ["Salaire","+15%","Les personnes perçues comme attirantes gagnent 10 à 15 % de plus.","Hamermesh & Biddle, 1994"],
+    ["Carrière","×1,9","Jugées plus compétentes dès l'entretien d'embauche.","Puleo, 2006"],
+    ["Confiance","+23%","Estime de soi nettement supérieure à long terme.","J. of Social Psychology, 2019"],
+    ["Influence","+55%","De chances en plus de convaincre et de vendre.","Reingen & Kernan, 1993"],
+  ];
+  return (
+    <section id="science" style={{ padding:"110px 0", borderTop:"1px solid var(--gs-white-05)" }}>
+      <div className="container">
+        <div data-reveal style={{ maxWidth:660, marginBottom:8 }}>
+          <Eyebrow>05 — La science</Eyebrow>
+          <h2 className="serif" style={{ fontWeight:700, fontSize:"clamp(32px,4.5vw,54px)", lineHeight:1.04, letterSpacing:"-.02em", margin:"20px 0 0" }}>
+            La beauté <span className="accent" style={{ fontStyle:"italic" }}>ouvre des portes.</span>
+          </h2>
+        </div>
+        <div className="sci-grid" data-reveal style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:0, marginTop:44, borderTop:"1px solid var(--hair)" }}>
+          {stats.map(([cat,big,desc,src],i)=>(
+            <div key={cat} style={{ padding:"30px 24px 30px 0", borderBottom:"1px solid var(--hair)", borderRight:i<3?"1px solid var(--gs-white-05)":"none", paddingLeft:i?24:0 }}>
+              <div className="eyebrow" style={{ marginBottom:16 }}>{cat}</div>
+              <div className="serif accent" style={{ fontSize:42, fontWeight:700, lineHeight:1, marginBottom:14, whiteSpace:"nowrap" }}>{big}</div>
+              <div style={{ color:"var(--gs-white-60)", fontSize:13.5, lineHeight:1.5, marginBottom:10 }}>{desc}</div>
+              <div style={{ color:"var(--gs-white-20)", fontSize:11 }}>{src}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── FAQ ── */
+function FAQ() {
+  const qs = [
+    ["Mes photos sont-elles conservées ?","Non. L'analyse est traitée puis ta photo est supprimée immédiatement. Rien n'est stocké, rien n'est partagé."],
+    ["Le score est-il objectif ?","Il s'appuie sur des ratios morphologiques mesurables et la littérature sur la perception faciale. C'est une estimation rigoureuse, pas un avis médical."],
+    ["Combien de temps pour des résultats ?","L'analyse prend 30 secondes. Le protocole, lui, se mesure en semaines : la plupart voient un écart se combler en 60 à 90 jours."],
+    ["Ça marche pour tous les visages ?","Oui. Le protocole est personnalisé à ta morphologie — il ne compare pas à un idéal unique, il maximise ton propre potentiel."],
+  ];
+  const [open, setOpen] = React.useState(0);
+  return (
+    <section id="faq" style={{ padding:"110px 0", borderTop:"1px solid var(--gs-white-05)" }}>
+      <div className="container" style={{ maxWidth:820 }}>
+        <div data-reveal style={{ marginBottom:40 }}>
+          <Eyebrow>06 — Questions</Eyebrow>
+          <h2 className="serif" style={{ fontWeight:700, fontSize:"clamp(30px,4vw,48px)", lineHeight:1.04, letterSpacing:"-.02em", margin:"20px 0 0" }}>
+            Ce qu'on nous demande.
+          </h2>
+        </div>
+        <div data-reveal>
+          {qs.map(([q,a],i)=>{
+            const isOpen=open===i;
+            return (
+              <div key={q} style={{ borderTop:"1px solid var(--hair)", borderBottom:i===qs.length-1?"1px solid var(--hair)":"none" }}>
+                <button onClick={()=>setOpen(isOpen?-1:i)} style={{ width:"100%", background:"none", border:"none", color:"#fff", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, padding:"24px 0", textAlign:"left", font:"inherit" }}>
+                  <span className="serif" style={{ fontSize:19, fontWeight:500 }}>{q}</span>
+                  <span style={{ flexShrink:0, transform:isOpen?"rotate(45deg)":"none", transition:"transform .3s", color:"var(--accent)" }}>
+                    <window.GSIcon name="plus" size={20} color="var(--accent)" />
+                  </span>
+                </button>
+                <div style={{ maxHeight:isOpen?200:0, overflow:"hidden", transition:"max-height .4s var(--gs-ease)" }}>
+                  <p style={{ color:"var(--gs-white-50)", fontSize:15, lineHeight:1.65, margin:0, paddingBottom:24, maxWidth:640 }}>{a}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── FINAL CTA ── */
+function FinalCTA() {
+  return (
+    <section style={{ padding:"150px 0", overflow:"hidden", borderTop:"1px solid var(--gs-white-05)" }}>
+      <div className="ambient" style={{ top:"50%", left:"50%", transform:"translate(-50%,-50%)", width:1000, height:560 }} />
+      <div className="container" data-reveal style={{ position:"relative", textAlign:"center", maxWidth:760 }}>
+        <h2 className="serif" style={{ fontWeight:700, fontSize:"clamp(40px,6vw,80px)", lineHeight:.98, letterSpacing:"-.022em", margin:0 }}>
+          Ton <span className="accent" style={{ fontStyle:"italic" }}>potentiel</span><br/>n'attend que toi.
+        </h2>
+        <p style={{ color:"var(--gs-white-60)", fontSize:18, margin:"26px auto 34px", maxWidth:460, lineHeight:1.6 }}>
+          Une photo suffit pour savoir où tu en es. Le reste, c'est ton protocole qui s'en charge.
+        </p>
+        <Button variant="gold" size="lg" iconRight={<window.GSIcon name="arrow-right" size={16} color="#000" />}>Lancer mon analyse — gratuit</Button>
+        <div style={{ color:"var(--gs-white-30)", fontSize:13, marginTop:18 }}>Sans carte bancaire · Résultat en 30 secondes · Photo jamais conservée</div>
+      </div>
+    </section>
+  );
+}
+
+/* ── FOOTER ── */
+function Footer() {
+  return (
+    <footer style={{ borderTop:"1px solid var(--hair)", padding:"44px 0 36px" }}>
+      <div className="container">
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, flexWrap:"wrap" }}>
+          <Wordmark size={20} />
+          <div style={{ display:"flex", gap:26, color:"var(--gs-white-30)", fontSize:13 }}>
+            <a href="#">Mentions légales</a><a href="#">CGU</a><a href="#">Confidentialité</a>
+          </div>
+          <span style={{ color:"var(--gs-white-20)", fontSize:13 }}>© 2026 GlowScore</span>
+        </div>
+        <p style={{ color:"var(--gs-white-20)", fontSize:11, lineHeight:1.6, maxWidth:760, margin:"26px auto 0", textAlign:"center" }}>
+          GlowScore fournit une information générale produite automatiquement à des fins de divertissement et de bien-être. Les résultats ne constituent en aucun cas un conseil médical, dermatologique ou psychologique personnalisé.
+        </p>
+      </div>
+    </footer>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   App — directions & tweaks
+   ═══════════════════════════════════════════════════════════════ */
+const DIRECTIONS = {
+  "Éditorial": { accent:"#E7C87C", rgb:"231,200,124", bg:"#070708", glow:0.12, mono:false, hair:"rgba(255,255,255,0.10)" },
+  "Clinique":  { accent:"#D6CDB6", rgb:"214,205,182", bg:"#08090b", glow:0.05, mono:true,  hair:"rgba(255,255,255,0.13)" },
+  "Aura":      { accent:"#F1C77D", rgb:"241,199,125", bg:"#0b0806", glow:0.22, mono:false, hair:"rgba(255,255,255,0.08)" },
+};
+const GLOW_MULT = { "Discret":1, "Ambiant":1.9, "Aucun":0 };
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "direction": "Éditorial",
+  "glow": "Aucun",
+  "grain": true,
+  "proof": true
+}/*EDITMODE-END*/;
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const d = DIRECTIONS[t.direction] || DIRECTIONS["Éditorial"];
+  const glowOp = (d.glow*(GLOW_MULT[t.glow]??1)).toFixed(3);
+
+  const vars = {
+    "--accent": d.accent,
+    "--accent-glow": `rgba(${d.rgb},0.40)`,
+    "--accent-glow-strong": `rgba(${d.rgb},0.70)`,
+    "--accent-tint": `rgba(${d.rgb},0.07)`,
+    "--accent-panel": `linear-gradient(180deg, rgba(${d.rgb},0.07), rgba(${d.rgb},0.02))`,
+    "--hair": d.hair,
+    "--card-glow": `0 0 40px rgba(${d.rgb},0.08)`,
+    "--label-font": d.mono?"var(--gs-font-mono)":"var(--gs-font-sans)",
+    "--glow-op": glowOp,
+    "--bg": d.bg,
+    "--gs-gold": d.accent,
+    "--gs-gold-hover": d.accent,
+    "--gs-gold-deep": d.accent,
+    "--gs-score-mid": d.accent,
+    "--gs-gradient-gold": `linear-gradient(135deg, ${d.accent}, ${d.accent})`,
+    "--gs-glow-ring": `0 0 60px rgba(${d.rgb},${(glowOp*1.2)})`,
+    background: d.bg,
+  };
+
+  React.useEffect(()=>{
+    document.body.style.background = d.bg;
+    document.body.classList.toggle("grain", !!t.grain);
+  }, [d.bg, t.grain]);
+
+  return (
+    <div id="app" className={t.proof?"":"hide-proof"} style={vars}>
+      <Nav />
+      <Hero />
+      <Steps />
+      <Analyse />
+      <Potentiel />
+      <Protocoles />
+      <Science />
+      <FAQ />
+      <FinalCTA />
+      <Footer />
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Direction" />
+        <TweakRadio label="Style" value={t.direction} options={Object.keys(DIRECTIONS)} onChange={(v)=>setTweak("direction",v)} />
+        <TweakSection label="Ambiance" />
+        <TweakRadio label="Glow" value={t.glow} options={Object.keys(GLOW_MULT)} onChange={(v)=>setTweak("glow",v)} />
+        <TweakToggle label="Grain" value={t.grain} onChange={(v)=>setTweak("grain",v)} />
+        <TweakToggle label="Preuve sociale" value={t.proof} onChange={(v)=>setTweak("proof",v)} />
+      </TweaksPanel>
+    </div>
+  );
+}
+
+/* ── boot ── */
+(function boot() {
+  if (!window.lucide || !window.GSIcon) return setTimeout(boot, 30);
+
+  function checkReveal() {
+    const trigger = window.innerHeight*0.95;
+    document.querySelectorAll("[data-reveal]:not(.animate)").forEach(el=>{
+      if (el.getBoundingClientRect().top < trigger) el.classList.add("animate");
+    });
+  }
+  window.addEventListener("scroll", checkReveal, { passive:true });
+  window.addEventListener("resize", checkReveal);
+
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  let ticks=0;
+  const iv=setInterval(()=>{ checkReveal(); if(++ticks>40)clearInterval(iv); },120);
+})();
+</script>
+</body>
+</html>
